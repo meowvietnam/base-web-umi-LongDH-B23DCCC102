@@ -44,20 +44,18 @@
 		icon: 'ArrowsAltOutlined',
 	},
 	{
-<<<<<<< HEAD
 		path: '/tien-do-hoc-tap',
 		name: 'Theo dõi tiến độ học tập',
 		component: './TienDoHocTap/index.tsx',
 		icon: 'ArrowsAltOutlined',
 	},
-=======
+	{
 		path: '/number-guessing-game',
 		name: 'Number Guessing Game',
 		component: './NumberGuessingGame',
 		icon: 'ArrowsAltOutlined',
 	},
 
->>>>>>> 81fb0f463ff7ed7f2d2316cd4c8d1ef1736a9c63
 
 	// DANH MUC HE THONG
 	// {
