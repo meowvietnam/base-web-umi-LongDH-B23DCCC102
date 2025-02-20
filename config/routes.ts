@@ -43,6 +43,12 @@
 		component: './ToDoList',
 		icon: 'ArrowsAltOutlined',
 	},
+	{
+		path: '/tien-do-hoc-tap',
+		name: 'Theo dõi tiến độ học tập',
+		component: './TienDoHocTap/index.tsx',
+		icon: 'ArrowsAltOutlined',
+	},
 
 	// DANH MUC HE THONG
 	// {
