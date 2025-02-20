@@ -47,6 +47,9 @@ const NumberGuessingGame = () => {
     return (
         <Card bodyStyle={{ height: '100%' }}>
             <div className='home-welcome'>
+				<h1>
+					Trò chơi đoán số!
+				</h1>
                 <div>
                     <b>{attempts} / 10 lượt đoán</b>
                 </div>
