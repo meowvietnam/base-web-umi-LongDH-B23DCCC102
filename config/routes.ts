@@ -43,6 +43,13 @@
 		component: './ToDoList',
 		icon: 'ArrowsAltOutlined',
 	},
+	{
+		path: '/number-guessing-game',
+		name: 'Number Guessing Game',
+		component: './NumberGuessingGame',
+		icon: 'ArrowsAltOutlined',
+	},
+
 
 	// DANH MUC HE THONG
 	// {
