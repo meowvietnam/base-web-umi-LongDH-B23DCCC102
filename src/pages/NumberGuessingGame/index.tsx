@@ -1,5 +1,5 @@
 import { Card, Input, Button, message } from 'antd';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 //import { unitName } from '@/services/base/constant';
 
 const NumberGuessingGame = () => {
@@ -8,9 +8,7 @@ const NumberGuessingGame = () => {
     const [attempts, setAttempts] = useState(0);
     const [feedback, setFeedback] = useState('');
 
-    useEffect(() => {
-        startNewGame();
-    }, []);
+    
 
     const startNewGame = () => {
 		const newRandomNumber = Math.floor(Math.random() * 100) + 1;
@@ -18,7 +16,7 @@ const NumberGuessingGame = () => {
         setGuess('');
         setAttempts(0);
         //setFeedback(`${newRandomNumber}`);
-		setFeedback(``);
+		setFeedback('');
 
     };
 
