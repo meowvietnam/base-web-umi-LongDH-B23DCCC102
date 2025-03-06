@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select, message } from 'antd';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -34,6 +34,8 @@ export default function ManagementPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
     const [examStructures, setExamStructures] = useState<ExamStructure[]>([]);
+    const [generatedExam, setGeneratedExam] = useState<Question[]>([]);
+    const [selectedStructure, setSelectedStructure] = useState<string | null>(null);
     const [subjectForm] = Form.useForm();
     const [questionForm] = Form.useForm();
     const [examStructureForm] = Form.useForm();
@@ -158,6 +160,44 @@ export default function ManagementPage() {
             );
         });
         setFilteredQuestions(filtered);
+    };
+
+    const generateExam = () => {
+        if (!selectedStructure) {
+            message.error('Vui lòng chọn cấu trúc đề thi');
+            return;
+        }
+
+        const structure = examStructures.find((s) => s.key === selectedStructure);
+        if (!structure) {
+            message.error('Cấu trúc đề thi không hợp lệ');
+            return;
+        }
+
+        const selectedQuestions: Question[] = [];
+        const difficulties = ['Dễ', 'Trung bình', 'Khó', 'Rất khó'];
+        const difficultyCounts = {
+            'Dễ': structure.easy,
+            'Trung bình': structure.medium,
+            'Khó': structure.hard,
+            'Rất khó': structure.veryHard,
+        };
+
+        for (const difficulty of difficulties) {
+            const questionsByDifficulty = questions.filter(
+                (question) => question.subject === structure.subject && question.difficulty === difficulty
+            );
+
+            if (questionsByDifficulty.length < difficultyCounts[difficulty]) {
+                message.error(`Không đủ câu hỏi ${difficulty} cho môn ${structure.subject}`);
+                return;
+            }
+
+            const shuffledQuestions = questionsByDifficulty.sort(() => 0.5 - Math.random());
+            selectedQuestions.push(...shuffledQuestions.slice(0, difficultyCounts[difficulty]));
+        }
+
+        setGeneratedExam(selectedQuestions);
     };
 
     return (
@@ -379,7 +419,32 @@ export default function ManagementPage() {
 
             <Card title="Danh sách cấu trúc đề thi" style={{ marginBottom: 20 }}>
                 <Table dataSource={examStructures} columns={examStructureColumns} pagination={false} />
+                <Form layout="inline">
+                <Form.Item label="Chọn cấu trúc đề thi">
+                        <Select
+                            style={{ width: 200 }}
+                            onChange={(value) => setSelectedStructure(value)}
+                        >
+                            {examStructures.map((structure, index) => (
+                            <Option key={structure.key} value={structure.key}>
+                                Cấu trúc {index + 1}
+                            </Option>
+                         ))}
+                        </Select>
+                </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" onClick={generateExam}>
+                            Tạo đề thi
+                        </Button>
+                    </Form.Item>
+                </Form>
             </Card>
+
+            {generatedExam.length > 0 && (
+                <Card title="Đề thi đã tạo" style={{ marginTop: 20 }}>
+                    <Table dataSource={generatedExam} columns={questionColumns} pagination={false} />
+                </Card>
+            )}
         </div>
     );
 }
