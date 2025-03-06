@@ -55,7 +55,18 @@
 		component: './NumberGuessingGame',
 		icon: 'ArrowsAltOutlined',
 	},
-
+	{
+		path: '/rock-paper-scissors',
+		name: 'Rock Paper Scissors',
+		component: './TH2/Bai1',
+		icon: 'ArrowsAltOutlined',
+	},
+	{
+		path: '/ngan-hang-cau-hoi',
+		name: 'Ngân hàng câu hỏi',
+		component: './TH2/Bai2',
+		icon: 'ArrowsAltOutlined',
+	},
 
 	// DANH MUC HE THONG
 	// {
