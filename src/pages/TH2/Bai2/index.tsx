@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select, message } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select, message, Popconfirm } from 'antd';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -46,6 +46,9 @@ export default function ManagementPage() {
         question: false,
         examStructure: false,
     });
+    const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+    const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+    const [editingExamStructure, setEditingExamStructure] = useState<ExamStructure | null>(null);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [searchSubject, setSearchSubject] = useState('');
     const [searchDifficulty, setSearchDifficulty] = useState('');
@@ -82,6 +85,20 @@ export default function ManagementPage() {
         setIsModalVisible({ ...isModalVisible, subject: false });
     };
 
+    const editSubject = (values: Subject) => {
+        const updatedSubjects = subjects.map((subject) =>
+            subject.key === values.key ? values : subject
+        );
+        setSubjects(updatedSubjects);
+        setEditingSubject(null);
+        setIsModalVisible({ ...isModalVisible, subject: false });
+    };
+
+    const deleteSubject = (key: string) => {
+        const updatedSubjects = subjects.filter((subject) => subject.key !== key);
+        setSubjects(updatedSubjects);
+    };
+
     const addQuestion = (values: Omit<Question, 'key'>) => {
         const newQuestion: Question = {
             key: `${questions.length + 1}`,
@@ -91,6 +108,22 @@ export default function ManagementPage() {
         setFilteredQuestions([...questions, newQuestion]);
         questionForm.resetFields();
         setIsModalVisible({ ...isModalVisible, question: false });
+    };
+
+    const editQuestion = (values: Question) => {
+        const updatedQuestions = questions.map((question) =>
+            question.key === values.key ? values : question
+        );
+        setQuestions(updatedQuestions);
+        setFilteredQuestions(updatedQuestions);
+        setEditingQuestion(null);
+        setIsModalVisible({ ...isModalVisible, question: false });
+    };
+
+    const deleteQuestion = (key: string) => {
+        const updatedQuestions = questions.filter((question) => question.key !== key);
+        setQuestions(updatedQuestions);
+        setFilteredQuestions(updatedQuestions);
     };
 
     const addExamStructure = (values: Omit<ExamStructure, 'key'>) => {
@@ -103,6 +136,20 @@ export default function ManagementPage() {
         setIsModalVisible({ ...isModalVisible, examStructure: false });
     };
 
+    const editExamStructure = (values: ExamStructure) => {
+        const updatedExamStructures = examStructures.map((structure) =>
+            structure.key === values.key ? values : structure
+        );
+        setExamStructures(updatedExamStructures);
+        setEditingExamStructure(null);
+        setIsModalVisible({ ...isModalVisible, examStructure: false });
+    };
+
+    const deleteExamStructure = (key: string) => {
+        const updatedExamStructures = examStructures.filter((structure) => structure.key !== key);
+        setExamStructures(updatedExamStructures);
+    };
+
     const handleSearch = () => {
         let filtered = questions;
         if (searchKeyword) {
@@ -110,16 +157,16 @@ export default function ManagementPage() {
                 question.content.toLowerCase().includes(searchKeyword.toLowerCase())
             );
         }
-        if (searchSubject) {
+        if (searchSubject && searchSubject !== 'All') {
             filtered = filtered.filter(question => question.subject === searchSubject);
         }
-        if (searchDifficulty) {
+        if (searchDifficulty && searchDifficulty !== 'All') {
             filtered = filtered.filter(question => question.difficulty === searchDifficulty);
         }
-        if (searchKnowledgeBlock) {
+        if (searchKnowledgeBlock && searchKnowledgeBlock !== 'All') {
             filtered = filtered.filter(question => question.knowledgeBlock === searchKnowledgeBlock);
         }
-        setFilteredQuestions(filtered);
+        setFilteredQuestions(filtered.length > 0 ? filtered : []);
     };
 
     const subjectColumns = [
@@ -137,6 +184,31 @@ export default function ManagementPage() {
             title: 'Số tín chỉ',
             dataIndex: 'credits',
             key: 'credits',
+        },
+        {
+            title: 'Tùy Chỉnh',
+            key: 'action',
+            render: (_: any, record: Subject) => (
+                <>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            setEditingSubject(record);
+                            setIsModalVisible({ ...isModalVisible, subject: true });
+                        }}
+                    >
+                        Sửa
+                    </Button>
+                    <Popconfirm
+                        title="Bạn có chắc chắn muốn xóa môn học này không?"
+                        onConfirm={() => deleteSubject(record.key)}
+                    >
+                        <Button type="link" danger>
+                            Xóa
+                        </Button>
+                    </Popconfirm>
+                </>
+            ),
         },
     ];
 
@@ -166,6 +238,31 @@ export default function ManagementPage() {
             dataIndex: 'knowledgeBlock',
             key: 'knowledgeBlock',
         },
+        {
+            title: 'Tùy Chỉnh',
+            key: 'action',
+            render: (_: any, record: Question) => (
+                <>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            setEditingQuestion(record);
+                            setIsModalVisible({ ...isModalVisible, question: true });
+                        }}
+                    >
+                        Sửa
+                    </Button>
+                    <Popconfirm
+                        title="Bạn có chắc chắn muốn xóa câu hỏi này không?"
+                        onConfirm={() => deleteQuestion(record.key)}
+                    >
+                        <Button type="link" danger>
+                            Xóa
+                        </Button>
+                    </Popconfirm>
+                </>
+            ),
+        },
     ];
 
     const examStructureColumns = [
@@ -194,6 +291,31 @@ export default function ManagementPage() {
             dataIndex: 'veryHard',
             key: 'veryHard',
         },
+        {
+            title: 'Tùy Chỉnh',
+            key: 'action',
+            render: (_: any, record: ExamStructure) => (
+                <>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            setEditingExamStructure(record);
+                            setIsModalVisible({ ...isModalVisible, examStructure: true });
+                        }}
+                    >
+                        Sửa
+                    </Button>
+                    <Popconfirm
+                        title="Bạn có chắc chắn muốn xóa cấu trúc đề thi này không?"
+                        onConfirm={() => deleteExamStructure(record.key)}
+                    >
+                        <Button type="link" danger>
+                            Xóa
+                        </Button>
+                    </Popconfirm>
+                </>
+            ),
+        },
     ];
 
     const generateExam = () => {
@@ -209,7 +331,7 @@ export default function ManagementPage() {
         }
 
         const selectedQuestions: Question[] = [];
-        const difficulties = ['Dễ', 'Trung bình', 'Khó', 'Rất khó'];
+        const difficulties: (keyof typeof difficultyCounts)[] = ['Dễ', 'Trung bình', 'Khó', 'Rất khó'];
         const difficultyCounts = {
             'Dễ': structure.easy,
             'Trung bình': structure.medium,
@@ -252,12 +374,20 @@ export default function ManagementPage() {
             </div>
 
             <Modal
-                title="Thêm môn học"
+                title={editingSubject ? "Sửa môn học" : "Thêm môn học"}
                 visible={isModalVisible.subject}
-                onCancel={() => setIsModalVisible({ ...isModalVisible, subject: false })}
+                onCancel={() => {
+                    setEditingSubject(null);
+                    setIsModalVisible({ ...isModalVisible, subject: false });
+                }}
                 footer={null}
             >
-                <Form form={subjectForm} layout="vertical" onFinish={addSubject}>
+                <Form
+                    form={subjectForm}
+                    layout="vertical"
+                    onFinish={editingSubject ? editSubject : addSubject}
+                    initialValues={editingSubject || {}}
+                >
                     <Form.Item
                         label="Mã môn"
                         name="code"
@@ -281,19 +411,27 @@ export default function ManagementPage() {
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Thêm môn học
+                            {editingSubject ? "Lưu" : "Thêm môn học"}
                         </Button>
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title="Thêm câu hỏi"
+                title={editingQuestion ? "Sửa câu hỏi" : "Thêm câu hỏi"}
                 visible={isModalVisible.question}
-                onCancel={() => setIsModalVisible({ ...isModalVisible, question: false })}
+                onCancel={() => {
+                    setEditingQuestion(null);
+                    setIsModalVisible({ ...isModalVisible, question: false });
+                }}
                 footer={null}
             >
-                <Form form={questionForm} layout="vertical" onFinish={addQuestion}>
+                <Form
+                    form={questionForm}
+                    layout="vertical"
+                    onFinish={editingQuestion ? editQuestion : addQuestion}
+                    initialValues={editingQuestion || {}}
+                >
                     <Form.Item
                         label="Mã câu hỏi"
                         name="code"
@@ -342,19 +480,27 @@ export default function ManagementPage() {
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Thêm câu hỏi
+                            {editingQuestion ? "Lưu" : "Thêm câu hỏi"}
                         </Button>
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title="Thêm cấu trúc đề thi"
+                title={editingExamStructure ? "Sửa cấu trúc đề thi" : "Thêm cấu trúc đề thi"}
                 visible={isModalVisible.examStructure}
-                onCancel={() => setIsModalVisible({ ...isModalVisible, examStructure: false })}
+                onCancel={() => {
+                    setEditingExamStructure(null);
+                    setIsModalVisible({ ...isModalVisible, examStructure: false });
+                }}
                 footer={null}
             >
-                <Form form={examStructureForm} layout="vertical" onFinish={addExamStructure}>
+                <Form
+                    form={examStructureForm}
+                    layout="vertical"
+                    onFinish={editingExamStructure ? editExamStructure : addExamStructure}
+                    initialValues={editingExamStructure || {}}
+                >
                     <Form.Item
                         label="Môn học"
                         name="subject"
@@ -398,7 +544,7 @@ export default function ManagementPage() {
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Thêm cấu trúc đề thi
+                            {editingExamStructure ? "Lưu" : "Thêm cấu trúc đề thi"}
                         </Button>
                     </Form.Item>
                 </Form>
@@ -415,7 +561,7 @@ export default function ManagementPage() {
                         value={searchKeyword}
                         onChange={(e) => setSearchKeyword(e.target.value)}
                         onSearch={handleSearch}
-                        style={{ marginBottom: 20, width:'400px', marginRight: 10}}
+                        style={{ marginBottom: 20, width: '400px', marginRight: 10 }}
                     />
                     <Select
                         placeholder="Chọn môn học"
@@ -423,6 +569,7 @@ export default function ManagementPage() {
                         onChange={(value) => setSearchSubject(value)}
                         style={{ width: 200, marginBottom: 20, marginRight: 10 }}
                     >
+                        <Option value="All">All</Option>
                         {subjects.map((subject) => (
                             <Option key={subject.key} value={subject.name}>
                                 {subject.name}
@@ -435,22 +582,30 @@ export default function ManagementPage() {
                         onChange={(value) => setSearchDifficulty(value)}
                         style={{ width: 200, marginBottom: 20, marginRight: 10 }}
                     >
+                        <Option value="All">All</Option>
                         <Option value="Dễ">Dễ</Option>
                         <Option value="Trung bình">Trung bình</Option>
                         <Option value="Khó">Khó</Option>
                         <Option value="Rất khó">Rất khó</Option>
                     </Select>
-                    <Input
-                        placeholder="Khối kiến thức"
+                    <Select
+                        placeholder="Chọn khối kiến thức"
                         value={searchKnowledgeBlock}
-                        onChange={(e) => setSearchKnowledgeBlock(e.target.value)}
+                        onChange={(value) => setSearchKnowledgeBlock(value)}
                         style={{ width: 200, marginBottom: 20, marginRight: 10 }}
-                    />
+                    >
+                        <Option value="All">All</Option>
+                        {[...new Set(questions.map((question) => question.knowledgeBlock))].map((knowledgeBlock) => (
+                            <Option key={knowledgeBlock} value={knowledgeBlock}>
+                                {knowledgeBlock}
+                            </Option>
+                        ))}
+                    </Select>
                     <Button type="primary" onClick={handleSearch} style={{ marginBottom: 20 }}>
                         Tìm kiếm
                     </Button>
                 </div>
-                <Table dataSource={filteredQuestions.length > 0 ? filteredQuestions : questions} columns={questionColumns} pagination={false} />
+                <Table dataSource={filteredQuestions.length > 0 ? filteredQuestions : []} columns={questionColumns} pagination={false} />
             </Card>
 
             <Card title="Danh sách cấu trúc đề thi" style={{ marginBottom: 20 }}>
