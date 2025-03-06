@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
-import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select } from 'antd';
-=======
-import { useState } from 'react';
 import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select, message } from 'antd';
->>>>>>> LongDH
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -201,19 +196,6 @@ export default function ManagementPage() {
         },
     ];
 
-<<<<<<< HEAD
-=======
-    const handleSearch = (values: any) => {
-        const filtered = questions.filter((question) => {
-            return (
-                (!values.subject || values.subject === 'All' || question.subject === values.subject) &&
-                (!values.difficulty || values.difficulty === 'All' || question.difficulty === values.difficulty) &&
-                (!values.knowledgeBlock || values.knowledgeBlock === 'All' || question.knowledgeBlock.includes(values.knowledgeBlock))
-            );
-        });
-        setFilteredQuestions(filtered);
-    };
-
     const generateExam = () => {
         if (!selectedStructure) {
             message.error('Vui lòng chọn cấu trúc đề thi');
@@ -252,7 +234,6 @@ export default function ManagementPage() {
         setGeneratedExam(selectedQuestions);
     };
 
->>>>>>> LongDH
     return (
         <div style={{ padding: 20, background: '#f0f2f5', minHeight: '100vh' }}>
             <Title level={2}  >
@@ -475,18 +456,18 @@ export default function ManagementPage() {
             <Card title="Danh sách cấu trúc đề thi" style={{ marginBottom: 20 }}>
                 <Table dataSource={examStructures} columns={examStructureColumns} pagination={false} />
                 <Form layout="inline">
-                <Form.Item label="Chọn cấu trúc đề thi">
+                    <Form.Item label="Chọn cấu trúc đề thi">
                         <Select
                             style={{ width: 200 }}
                             onChange={(value) => setSelectedStructure(value)}
                         >
                             {examStructures.map((structure, index) => (
-                            <Option key={structure.key} value={structure.key}>
-                                Cấu trúc {index + 1}
-                            </Option>
-                         ))}
+                                <Option key={structure.key} value={structure.key}>
+                                    Cấu trúc {index + 1}
+                                </Option>
+                            ))}
                         </Select>
-                </Form.Item>
+                    </Form.Item>
                     <Form.Item>
                         <Button type="primary" onClick={generateExam}>
                             Tạo đề thi
