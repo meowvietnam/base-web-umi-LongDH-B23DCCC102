@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Card, Form, Input, InputNumber, Table, Typography, Modal, Select } from 'antd';
 
 const { Title } = Typography;
 const { Option } = Select;
+const { Search } = Input;
 
 interface Subject {
     key: string;
@@ -43,6 +44,31 @@ export default function ManagementPage() {
         question: false,
         examStructure: false,
     });
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [searchSubject, setSearchSubject] = useState('');
+    const [searchDifficulty, setSearchDifficulty] = useState('');
+    const [searchKnowledgeBlock, setSearchKnowledgeBlock] = useState('');
+
+    useEffect(() => {
+        const storedSubjects = localStorage.getItem('hocPhan');
+        const storedQuestions = localStorage.getItem('cauHoi');
+        const storedExamStructures = localStorage.getItem('examStructures');
+        if (storedSubjects) setSubjects(JSON.parse(storedSubjects));
+        if (storedQuestions) setQuestions(JSON.parse(storedQuestions));
+        if (storedExamStructures) setExamStructures(JSON.parse(storedExamStructures));
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('hocPhan', JSON.stringify(subjects));
+    }, [subjects]);
+
+    useEffect(() => {
+        localStorage.setItem('cauHoi', JSON.stringify(questions));
+    }, [questions]);
+
+    useEffect(() => {
+        localStorage.setItem('examStructures', JSON.stringify(examStructures));
+    }, [examStructures]);
 
     const addSubject = (values: Omit<Subject, 'key'>) => {
         const newSubject: Subject = {
@@ -73,6 +99,25 @@ export default function ManagementPage() {
         setExamStructures([...examStructures, newExamStructure]);
         examStructureForm.resetFields();
         setIsModalVisible({ ...isModalVisible, examStructure: false });
+    };
+
+    const handleSearch = () => {
+        let filtered = questions;
+        if (searchKeyword) {
+            filtered = filtered.filter(question =>
+                question.content.toLowerCase().includes(searchKeyword.toLowerCase())
+            );
+        }
+        if (searchSubject) {
+            filtered = filtered.filter(question => question.subject === searchSubject);
+        }
+        if (searchDifficulty) {
+            filtered = filtered.filter(question => question.difficulty === searchDifficulty);
+        }
+        if (searchKnowledgeBlock) {
+            filtered = filtered.filter(question => question.knowledgeBlock === searchKnowledgeBlock);
+        }
+        setFilteredQuestions(filtered);
     };
 
     const subjectColumns = [
@@ -149,19 +194,8 @@ export default function ManagementPage() {
         },
     ];
 
-    const handleSearch = (values: any) => {
-        const filtered = questions.filter((question) => {
-            return (
-                (!values.subject || values.subject === 'All' || question.subject === values.subject) &&
-                (!values.difficulty || values.difficulty === 'All' || question.difficulty === values.difficulty) &&
-                (!values.knowledgeBlock || values.knowledgeBlock === 'All' || question.knowledgeBlock.includes(values.knowledgeBlock))
-            );
-        });
-        setFilteredQuestions(filtered);
-    };
-
     return (
-        <div style={{ padding: 20, textAlign: 'center', background: '#f0f2f5', minHeight: '100vh' }}>
+        <div style={{ padding: 20, background: '#f0f2f5', minHeight: '100vh' }}>
             <Title level={2}  >
                 Ngân Hàng Câu Hỏi
             </Title>
@@ -176,45 +210,6 @@ export default function ManagementPage() {
                     Thêm cấu trúc đề thi
                 </Button>
             </div>
-
-            <Card title="Tìm kiếm câu hỏi" style={{ marginBottom: 20 }}>
-                <Form form={searchForm} layout="inline" onFinish={handleSearch}>
-                    <Form.Item label="Môn học" name="subject">
-                        <Select style={{ width: 200 }}>
-                            <Option value="All">All</Option>
-                            {subjects.map((subject) => (
-                                <Option key={subject.key} value={subject.name}>
-                                    {subject.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item label="Mức độ khó" name="difficulty">
-                        <Select style={{ width: 200 }}>
-                            <Option value="All">All</Option>
-                            <Option value="Dễ">Dễ</Option>
-                            <Option value="Trung bình">Trung bình</Option>
-                            <Option value="Khó">Khó</Option>
-                            <Option value="Rất khó">Rất khó</Option>
-                        </Select>
-                    </Form.Item>
-                    <Form.Item label="Khối kiến thức" name="knowledgeBlock">
-                        <Select style={{ width: 200 }}>
-                            <Option value="All">All</Option>
-                            {questions.map((question) => (
-                                <Option key={question.key} value={question.knowledgeBlock}>
-                                    {question.knowledgeBlock}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Tìm kiếm
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Card>
 
             <Modal
                 title="Thêm môn học"
@@ -374,6 +369,47 @@ export default function ManagementPage() {
             </Card>
 
             <Card title="Danh sách câu hỏi" style={{ marginBottom: 20 }}>
+                <div>
+                    <Search
+                        placeholder="Tìm kiếm câu hỏi theo nội dung"
+                        value={searchKeyword}
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                        onSearch={handleSearch}
+                        style={{ marginBottom: 20, width:'400px', marginRight: 10}}
+                    />
+                    <Select
+                        placeholder="Chọn môn học"
+                        value={searchSubject}
+                        onChange={(value) => setSearchSubject(value)}
+                        style={{ width: 200, marginBottom: 20, marginRight: 10 }}
+                    >
+                        {subjects.map((subject) => (
+                            <Option key={subject.key} value={subject.name}>
+                                {subject.name}
+                            </Option>
+                        ))}
+                    </Select>
+                    <Select
+                        placeholder="Chọn mức độ khó"
+                        value={searchDifficulty}
+                        onChange={(value) => setSearchDifficulty(value)}
+                        style={{ width: 200, marginBottom: 20, marginRight: 10 }}
+                    >
+                        <Option value="Dễ">Dễ</Option>
+                        <Option value="Trung bình">Trung bình</Option>
+                        <Option value="Khó">Khó</Option>
+                        <Option value="Rất khó">Rất khó</Option>
+                    </Select>
+                    <Input
+                        placeholder="Khối kiến thức"
+                        value={searchKnowledgeBlock}
+                        onChange={(e) => setSearchKnowledgeBlock(e.target.value)}
+                        style={{ width: 200, marginBottom: 20, marginRight: 10 }}
+                    />
+                    <Button type="primary" onClick={handleSearch} style={{ marginBottom: 20 }}>
+                        Tìm kiếm
+                    </Button>
+                </div>
                 <Table dataSource={filteredQuestions.length > 0 ? filteredQuestions : questions} columns={questionColumns} pagination={false} />
             </Card>
 
