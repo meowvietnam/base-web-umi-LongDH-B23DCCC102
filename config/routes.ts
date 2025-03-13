@@ -67,7 +67,37 @@
 		component: './TH2/Bai2',
 		icon: 'ArrowsAltOutlined',
 	},
-
+	{
+		name: "Appointment Booking",
+		path: "ThucHanh03/Booking",
+		icon: "CalendarOutlined",
+		routes: [
+		  {
+			name: "Staff Management",
+			path: "staff",
+			component: "./TH3/Booking/StaffManagement",
+			icon: "UserOutlined",
+		  },
+		  {
+			name: "Service Management",
+			path: "services",
+			component: "./TH3/Booking/ServiceManagement",
+			icon: "ToolOutlined",
+		  },
+		  {
+			name: "Appointment Management",
+			path: "appointments",
+			component: "./TH3/Booking/AppointmentManagement",
+			icon: "CalendarOutlined",
+		  },
+		  {
+			name: "Dashboard",
+			path: "dashboard",
+			component: "./TH3/Booking/Dashboard",
+			icon: "DashboardOutlined",
+		  }
+		],
+	  },
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
