@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useEffect, useState } from 'react';
 import {
   Modal,
@@ -72,7 +73,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     }
   }, [visible, appointment, staffList]);
 
-  // update staff khi co lich
   const updateAvailableStaff = (serviceId: string | null) => {
     if (!serviceId) {
       setAvailableStaff(staffList.filter(staff => staff.isActive));
@@ -129,7 +129,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     const serviceDuration = service.duration;
     
     const slots = [];
-    let currentTime = startTime.clone();
+    const currentTime = startTime.clone();
     
     // them slot neu co tg
     while (currentTime.clone().add(serviceDuration, 'minutes').isSameOrBefore(endTime)) {
