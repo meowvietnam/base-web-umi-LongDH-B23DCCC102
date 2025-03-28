@@ -1,24 +1,20 @@
-// TODO FIX DASHBOARD CHART K RENDER DC
-
 import React, { useState, useEffect } from 'react';
 import { 
   Card, Row, Col, Statistic, DatePicker, 
-  Table, Typography, Space, Divider, Select
+  Table, Typography, Space, Select
 } from 'antd';
 import { 
   BookOutlined, 
   FileTextOutlined, 
-  UserOutlined, 
   SearchOutlined,
   FormOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
 import { ColumnChart, DonutChart } from '@/components/Chart';
-import { 
+import type { 
   GraduationDecision, 
   Certificate, 
-  CertificateRegister,
-  TemplateField
+  CertificateRegister
 } from '../types';
 
 const { Title, Text } = Typography;
@@ -30,7 +26,6 @@ const Dashboard: React.FC = () => {
   const [registers, setRegisters] = useState<CertificateRegister[]>([]);
   const [decisions, setDecisions] = useState<GraduationDecision[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [templateFields, setTemplateFields] = useState<TemplateField[]>([]);
   
   // filter
   const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment]>([
@@ -44,7 +39,6 @@ const Dashboard: React.FC = () => {
     const storedRegisters = localStorage.getItem('certificateRegisters');
     const storedDecisions = localStorage.getItem('graduationDecisions');
     const storedCertificates = localStorage.getItem('certificates');
-    const storedTemplateFields = localStorage.getItem('templateFields');
     
     if (storedRegisters) {
       setRegisters(JSON.parse(storedRegisters));
@@ -56,10 +50,6 @@ const Dashboard: React.FC = () => {
     
     if (storedCertificates) {
       setCertificates(JSON.parse(storedCertificates));
-    }
-    
-    if (storedTemplateFields) {
-      setTemplateFields(JSON.parse(storedTemplateFields));
     }
   }, []);
   
@@ -97,92 +87,6 @@ const Dashboard: React.FC = () => {
     };
   }, [registers, decisions, filteredCertificates]);
   
-  // chart theo quyet dinh
-  const certificatesByDecision = React.useMemo(() => {
-    const decisionCounts: Record<string, number> = {};
-    
-    decisions.forEach(decision => {
-      decisionCounts[decision.decisionNumber] = 0;
-    });
-    
-    filteredCertificates.forEach(certificate => {
-      const decision = decisions.find(d => d.id === certificate.decisionId);
-      if (decision) {
-        decisionCounts[decision.decisionNumber] = (decisionCounts[decision.decisionNumber] || 0) + 1;
-      }
-    });
-    
-    // chuyen thanh array cho chart doc
-    const labels: string[] = [];
-    const values: number[] = [];
-    
-    Object.entries(decisionCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .forEach(([key, value]) => {
-        labels.push(key);
-        values.push(value);
-      });
-    
-    return {
-      xAxis: labels,
-      yAxis: [values],
-      yLabel: ['Số lượng văn bằng']
-    };
-  }, [filteredCertificates, decisions]);
-  
-  // chart theo thang
-  const certificatesByMonth = React.useMemo(() => {
-    const monthlyCounts: Record<string, number> = {};
-    
-    // thang trong range filter
-    const startMonth = dateRange[0].clone().startOf('month');
-    const endMonth = dateRange[1].clone().startOf('month');
-    let currentMonth = startMonth.clone();
-    
-    while (currentMonth.isSameOrBefore(endMonth)) {
-      monthlyCounts[currentMonth.format('YYYY-MM')] = 0;
-      currentMonth.add(1, 'month');
-    }
-    
-    // chung chi theo thang
-    filteredCertificates.forEach(certificate => {
-      const month = moment(certificate.createdAt).format('YYYY-MM');
-      if (monthlyCounts[month] !== undefined) {
-        monthlyCounts[month]++;
-      }
-    });
-    
-    // array theo chart
-    const labels = Object.keys(monthlyCounts).map(month => moment(month).format('MM/YYYY'));
-    const values = Object.values(monthlyCounts);
-    
-    return {
-      xAxis: labels,
-      yAxis: [values],
-      yLabel: ['Số lượng văn bằng'],
-      type: 'line'
-    };
-  }, [filteredCertificates, dateRange]);
-  
-  // lookup data cho chart
-  const lookupsByDecision = React.useMemo(() => {
-    const lookupCounts: {label: string, value: number}[] = decisions
-      .filter(decision => decision.lookupCount && decision.lookupCount > 0)
-      .map(decision => ({
-        label: decision.decisionNumber,
-        value: decision.lookupCount || 0
-      }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 10);
-    
-    return {
-      xAxis: lookupCounts.map(item => item.label),
-      yAxis: [lookupCounts.map(item => item.value)],
-      yLabel: ['Lượt tra cứu']
-    };
-  }, [decisions]);
-  
   // cert cho bang
   const columns = [
     {
@@ -203,7 +107,7 @@ const Dashboard: React.FC = () => {
     {
       title: 'Quyết định',
       key: 'decision',
-      render: (_, record: Certificate) => {
+      render: (_: unknown, record: Certificate) => {
         const decision = decisions.find(d => d.id === record.decisionId);
         return decision ? decision.decisionNumber : 'N/A';
       }
@@ -298,47 +202,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
       </Row>
-      
-      {/* Charts */}
-      <Row gutter={16}>
-        <Col xs={24} lg={12}>
-          <Card title="Số lượng văn bằng theo quyết định" style={{ marginBottom: 16 }}>
-            <ColumnChart 
-              xAxis={certificatesByDecision.xAxis} 
-              yAxis={certificatesByDecision.yAxis} 
-              yLabel={certificatesByDecision.yLabel} 
-              height={300} 
-              colors={['#1890ff']}
-              formatY={(val) => val.toString()}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title="Lượt tra cứu theo quyết định" style={{ marginBottom: 16 }}>
-            <DonutChart 
-              xAxis={lookupsByDecision.xAxis} 
-              yAxis={lookupsByDecision.yAxis} 
-              yLabel={lookupsByDecision.yLabel} 
-              height={300} 
-              formatY={(val) => val.toString()}
-              showTotal={true}
-            />
-          </Card>
-        </Col>
-      </Row>
-      
-      {/* Certificates by month chart */}
-      <Card title="Số lượng văn bằng theo tháng" style={{ marginBottom: 16 }}>
-        <ColumnChart 
-          xAxis={certificatesByMonth.xAxis} 
-          yAxis={certificatesByMonth.yAxis} 
-          yLabel={certificatesByMonth.yLabel} 
-          height={300} 
-          type={certificatesByMonth.type}
-          colors={['#52c41a']}
-          formatY={(val) => val.toString()}
-        />
-      </Card>
       
       {/* Recent certificates */}
       <Card title="Văn bằng mới cấp" style={{ marginBottom: 16 }}>
