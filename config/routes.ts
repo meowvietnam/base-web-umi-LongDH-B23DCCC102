@@ -98,6 +98,50 @@
 		  }
 		],
 	  },
+	  {
+        name: "Quản lý văn bằng",
+        path: "QuanLyVanBang",
+        component: "./TH4",
+        icon: "FileTextOutlined",
+        routes: [
+            {
+                name: "Tổng quan",
+                path: "./",
+                component: "./TH4/Dashboard",
+                icon: "DashboardOutlined",
+            },
+            {
+                name: "Sổ văn bằng",
+                path: "registers",
+                component: "./TH4/CertificateRegister/RegisterList",
+                icon: "BookOutlined",
+            },
+            {
+                name: "Quyết định tốt nghiệp",
+                path: "decisions",
+                component: "./TH4/GraduationDecision/DecisionList",
+                icon: "FileTextOutlined",
+            },
+            {
+                name: "Cấu hình biểu mẫu",
+                path: "template",
+                component: "./TH4/TemplateConfig",
+                icon: "FormOutlined",
+            },
+            {
+                name: "Quản lý văn bằng",
+                path: "certificates",
+                component: "./TH4/CertificateManagement",
+                icon: "UserOutlined",
+            },
+            {
+                name: "Tra cứu văn bằng",
+                path: "lookup",
+                component: "./TH4/CertificateLookup",
+                icon: "SearchOutlined",
+            }
+        ]
+    },
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
