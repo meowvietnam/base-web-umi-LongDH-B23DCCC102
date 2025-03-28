@@ -48,6 +48,7 @@ const StaffForm: React.FC<StaffFormProps> = ({ visible, onCancel, onSave, staff 
   // reset
   useEffect(() => {
     if (visible) {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       loadServices();
       if (staff) {
         form.setFieldsValue({
@@ -59,16 +60,16 @@ const StaffForm: React.FC<StaffFormProps> = ({ visible, onCancel, onSave, staff 
           services: staff.services
         });
         
-        // lich lam viec
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         setScheduleFromStaff(staff.workSchedule);
       } else {
         form.resetFields();
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         resetSchedule();
       }
     }
   }, [visible, staff]);
 
-  // Load services localStorage
   const loadServices = () => {
     const storedServices = localStorage.getItem('bookingApp-services');
     if (storedServices) {
@@ -76,7 +77,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ visible, onCancel, onSave, staff 
     }
   };
 
-  // lich lam viec + staff data
   const setScheduleFromStaff = (schedule: WorkSchedule) => {
     if (schedule.monday) {
       setMonday({
@@ -164,7 +164,15 @@ const StaffForm: React.FC<StaffFormProps> = ({ visible, onCancel, onSave, staff 
   const handleSubmit = () => {
     form.validateFields().then(values => {
       // lam viec tu form
-      const workSchedule: WorkSchedule = {};
+      const workSchedule: WorkSchedule = {
+        monday: null,
+        tuesday: null,
+        wednesday: null,
+        thursday: null,
+        friday: null,
+        saturday: null,
+        sunday: null
+      };
 
       if (monday.enabled && monday.startTime && monday.endTime) {
         workSchedule.monday = {
