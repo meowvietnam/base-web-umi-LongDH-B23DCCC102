@@ -148,6 +148,12 @@
             }
         ]
     },
+	{
+		path: '/quan-ly-nhan-vien',
+		name: 'Quản Lý Nhân Viên',
+		icon: 'UserOutlined',
+		component: './KiemTraGiuaHocPhan/De3/OrderManagement',
+	},
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
