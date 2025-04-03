@@ -44,14 +44,52 @@ const OrderList: React.FC = () => {
 
   const handleSave = () => {
     form.validateFields().then((values) => {
+      // Tính tổng tiền từ danh sách sản phẩm
+      const totalAmount = editingOrder?.products.reduce(
+        (sum, product) => sum + product.price * product.quantity,
+        0
+      ) || 0;
+  
+      // Tạo đơn hàng mới với thông tin đã chỉnh sửa
+      const updatedOrder: Order = {
+        ...editingOrder!,
+        ...values,
+        totalAmount, // Cập nhật tổng tiền
+        products: editingOrder?.products || [],
+      };
+  
+      // Kiểm tra và cập nhật danh sách đơn hàng
       const updatedOrders = orders.map((order) =>
-        order.id === editingOrder?.id ? { ...order, ...values } : order
+        order.id === updatedOrder.id ? updatedOrder : order
       );
+  
+      // Lưu danh sách đơn hàng vào state và localStorage
       setOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
+      localStorage.setItem("orders", JSON.stringify(updatedOrders));
+  
+      // Đóng modal và reset trạng thái
       setIsModalVisible(false);
       setEditingOrder(null);
+      form.resetFields();
+    }).catch((error) => {
+      console.error("Validation failed:", error);
     });
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    if (editingOrder) {
+      const updatedProducts = editingOrder.products.filter(
+        (product) => product.id !== productId
+      );
+      const totalAmount = updatedProducts.reduce(
+        (sum, product) => sum + product.price * product.quantity,
+        0
+      );
+      const updatedOrder = { ...editingOrder, products: updatedProducts, totalAmount };
+      setEditingOrder(updatedOrder);
+      form.setFieldsValue(updatedOrder); // Cập nhật giá trị form
+    }
   };
 
   const columns = [
@@ -167,18 +205,6 @@ const OrderList: React.FC = () => {
       <Input type="date" />
     </Form.Item>
 
-    {/* Trường Tổng tiền */}
-    <Form.Item
-      name="totalAmount"
-      label="Tổng tiền"
-      rules={[
-        { required: true, message: "Vui lòng nhập tổng tiền!" },
-        { type: "number", min: 0, message: "Tổng tiền phải lớn hơn hoặc bằng 0!" },
-      ]}
-    >
-      <Input type="number" placeholder="Nhập tổng tiền" />
-    </Form.Item>
-
     {/* Trường Trạng thái */}
     <Form.Item
       name="status"
@@ -195,36 +221,52 @@ const OrderList: React.FC = () => {
 
     {/* Trường Sản phẩm */}
     <Form.Item label="Danh sách sản phẩm">
-      <Table
-        dataSource={editingOrder?.products || []}
-        columns={[
-          {
-            title: "Tên sản phẩm",
-            dataIndex: "name",
-            key: "name",
-          },
-          {
-            title: "Giá",
-            dataIndex: "price",
-            key: "price",
-            render: (price: number) => `${price.toLocaleString()} VND`,
-          },
-          {
-            title: "Số lượng",
-            dataIndex: "quantity",
-            key: "quantity",
-          },
-          {
-            title: "Thành tiền",
-            key: "total",
-            render: (_: any, record: Product) =>
-              `${(record.price * record.quantity).toLocaleString()} VND`,
-          },
-        ]}
-        rowKey="id"
-        pagination={false}
-      />
-    </Form.Item>
+  <Table
+    dataSource={editingOrder?.products || []}
+    columns={[
+      {
+        title: "Tên sản phẩm",
+        dataIndex: "name",
+        key: "name",
+      },
+      {
+        title: "Giá",
+        dataIndex: "price",
+        key: "price",
+        render: (price: number) => `${price.toLocaleString()} VND`,
+      },
+      {
+        title: "Số lượng",
+        dataIndex: "quantity",
+        key: "quantity",
+      },
+      {
+        title: "Thành tiền",
+        key: "total",
+        render: (_: any, record: Product) =>
+          `${(record.price * record.quantity).toLocaleString()} VND`,
+      },
+      {
+        title: "Hành động",
+        key: "action",
+        render: (_: any, record: Product) => (
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDeleteProduct(record.id)}
+          >
+            Xóa
+          </Button>
+        ),
+      },
+    ]}
+    rowKey="id"
+    pagination={false}
+  />
+</Form.Item>
+<Form.Item>
+  <h3>Tổng tiền: {editingOrder?.products.reduce((sum, product) => sum + product.price * product.quantity, 0).toLocaleString()} VND</h3>
+</Form.Item>
   </Form>
 </Modal>
     </div>
