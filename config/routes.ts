@@ -77,6 +77,7 @@
 		name: "Appointment Booking",
 		path: "ThucHanh03/Booking",
 		icon: "CalendarOutlined",
+		hideInMenu: true,
 		routes: [
 		  {
 			name: "Staff Management",
@@ -109,6 +110,7 @@
         path: "QuanLyVanBang",
         component: "./TH4",
         icon: "FileTextOutlined",
+		hideInMenu: true,
         routes: [
             {
                 name: "Tổng quan",
@@ -148,6 +150,24 @@
             }
         ]
     },
+	{
+		name: "Quản lý đơn hàng",
+		path: "/orders",
+		component: "./KTGK/OrderList",
+		icon: "ShoppingCartOutlined",
+	},
+	{
+		name: "Thêm đơn hàng",
+		path: "/orders/add",
+		component: "./KTGK/AddOrder",
+		icon: "PlusOutlined",
+	  },
+	  {
+		name: "Hủy đơn hàng",
+		path: "/orders/cancel",
+		component: "./KTGK/CancelOrder",
+		icon: "StopOutlined",
+	  },
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
