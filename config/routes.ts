@@ -148,6 +148,38 @@
             }
         ]
     },
+	{
+        name: "Quản lý câu lạc bộ",
+        path: "TH5",
+        component: "./ThucHanh05",
+        icon: "TeamOutlined",
+        routes: [
+            {
+                name: "Tổng quan",
+                path: "./",
+                component: "./TH5/Dashboard",
+                icon: "DashboardOutlined",
+            },
+            {
+                name: "Quản lý CLB",
+                path: "clubs",
+                component: "./TH5/ClubManagement/ClubList",
+                icon: "TeamOutlined",
+            },
+            {
+                name: "Quản lý đơn đăng ký",
+                path: "applications",
+                component: "./TH5/ApplicationManagement/ApplicationList",
+                icon: "FormOutlined",
+            },
+            {
+                name: "Quản lý thành viên",
+                path: "members",
+                component: "./TH5/MemberManagement/ClubMembers",
+                icon: "UserOutlined",
+            }
+        ]
+    },
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
