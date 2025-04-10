@@ -12,7 +12,7 @@ import {
   DownloadOutlined
 } from '@ant-design/icons';
 import { ClubMember, Club, ApplicationStatus, Stats } from '../types';
-import { ColumnChart } from '@/components/Chart';
+import ColumnChart from '@/components/Chart/ColumnChart';
 import * as XLSX from 'xlsx';
 
 const { Title, Text } = Typography;

@@ -150,8 +150,7 @@
     },
 	{
         name: "Quản lý câu lạc bộ",
-        path: "TH5",
-        component: "./ThucHanh05",
+        path: "/TH5",
         icon: "TeamOutlined",
         routes: [
             {
