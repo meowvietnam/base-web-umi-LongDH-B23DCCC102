@@ -21,21 +21,6 @@ const TrangChu: React.FC = () => {
     fetchDestinations();
   }, []);
 
-  const handleFilterType = (value: string) => {
-    setFilterType(value);
-    applyFilters(value, maxCost, minRating);
-  };
-
-  const handleMaxCost = (value: number | null) => {
-    setMaxCost(value);
-    applyFilters(filterType, value, minRating);
-  };
-
-  const handleMinRating = (value: number | null) => {
-    setMinRating(value);
-    applyFilters(filterType, maxCost, value);
-  };
-
   const applyFilters = (type: string | null, cost: number | null, rating: number | null) => {
     let filtered = destinations;
 
@@ -53,6 +38,23 @@ const TrangChu: React.FC = () => {
 
     setFilteredDestinations(filtered);
   };
+
+  const handleFilterType = (value: string) => {
+    setFilterType(value);
+    applyFilters(value, maxCost, minRating);
+  };
+
+  const handleMaxCost = (value: number | null) => {
+    setMaxCost(value);
+    applyFilters(filterType, value, minRating);
+  };
+
+  const handleMinRating = (value: number | null) => {
+    setMinRating(value);
+    applyFilters(filterType, maxCost, value);
+  };
+
+  
 
   return (
     <div>

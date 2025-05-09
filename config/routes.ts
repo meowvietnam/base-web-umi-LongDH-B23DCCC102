@@ -1,4 +1,6 @@
-﻿export default [
+﻿import path from "path";
+
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -177,6 +179,43 @@
                 component: "./TH5/MemberManagement/ClubMembers",
                 icon: "UserOutlined",
             }
+        ]
+    },
+	{
+        name: "TH6",
+        path: "/TH6",
+        icon: "TeamOutlined",
+        routes: [
+            {
+                name: "Tổng quan",
+                path: "./TH6/Tong-quan",
+                component: "./TH6/TrangChu/index",
+                icon: "DashboardOutlined",
+            },
+            {
+                name: "lịch trình",
+                path: "./TH6/lich-trinh",
+                component: "./TH6/lichTrinh/index",
+                icon: "TeamOutlined",
+            },
+            {
+				name: 'Ngân sách',
+				path: './TH6/ngan-sach',
+				component: './TH6/nganSach/index',
+				icon: 'DollarOutlined',
+			},
+			{
+				name: 'Admin',
+				path: './TH6/admin',
+				component: './TH6/Admin/index',
+				icon: 'SettingOutlined',
+			},
+			{
+				name: 'Thống kê',
+				path: './TH6/Thong-ke',
+				component: './TH6/ThongKe/index',
+				icon: 'SettingOutlined',
+			},
         ]
     },
 	// DANH MUC HE THONG
